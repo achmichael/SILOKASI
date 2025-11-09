@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Http;
 
 class GDSSUsageExamples
 {
-    protected string $baseUrl = 'http://localhost:8000';
+    protected string $baseUrl = 'http://localhost:8090';
     
     /**
      * Example 1: Complete workflow for a single Decision Maker
@@ -58,7 +58,6 @@ class GDSSUsageExamples
                 'user_id' => $userId,
                 'criteria_id' => $criteriaId,
                 'comparisons' => [
-                    // Example: Option A vs Option B, Option C
                     ['alternative_id_1' => 1, 'alternative_id_2' => 2, 'comparison_value' => 4],
                     ['alternative_id_1' => 1, 'alternative_id_2' => 3, 'comparison_value' => 2],
                     ['alternative_id_1' => 2, 'alternative_id_2' => 3, 'comparison_value' => 0.5],
