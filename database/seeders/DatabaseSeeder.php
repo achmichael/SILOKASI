@@ -15,11 +15,20 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        // Seed GDSS ANP-BORDA Housing Site Selection Data
+        $this->call([
+            UsersTableSeeder::class,
+            CriteriaTableSeeder::class,
+            CriteriaDependenciesTableSeeder::class,
+            PairwiseComparisonsCriteriaTableSeeder::class,
+            AnpCriteriaWeightsTableSeeder::class,
+            AlternativesTableSeeder::class,
+            PairwiseComparisonsAlternativesTableSeeder::class,
+            AnpAlternativeWeightsTableSeeder::class,
+            DmRankingsTableSeeder::class,
+            BordaResultsTableSeeder::class,
         ]);
+
+        $this->command->info('GDSS ANP-BORDA database seeded successfully!');
     }
 }

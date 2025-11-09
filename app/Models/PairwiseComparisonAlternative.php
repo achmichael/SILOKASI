@@ -2,12 +2,18 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class PairwiseComparisonAlternative extends Model
 {
+    use HasUuids;
+
     protected $table = 'pairwise_comparisons_alternatives';
+    
+    public $incrementing = false;
+    protected $keyType = 'string';
     
     protected $fillable = [
         'user_id',
