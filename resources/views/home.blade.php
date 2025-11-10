@@ -103,6 +103,77 @@
             width: 100%;
         }
 
+        .nav-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn-login {
+            padding: 0.7rem 1.8rem;
+            background: transparent;
+            border: 1px solid #DAA520;
+            color: #DAA520;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .btn-login:hover {
+            background: rgba(218, 165, 32, 0.1);
+            border-color: #FFD700;
+            color: #FFD700;
+        }
+
+        .btn-register {
+            padding: 0.7rem 1.8rem;
+            background: linear-gradient(135deg, #DAA520 0%, #FFD700 100%);
+            border: none;
+            color: #000;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+            box-shadow: 0 5px 15px rgba(218, 165, 32, 0.3);
+        }
+
+        .btn-register:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(218, 165, 32, 0.5);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-name {
+            color: #DAA520;
+            font-weight: 600;
+        }
+
+        .btn-logout {
+            padding: 0.7rem 1.8rem;
+            background: rgba(220, 53, 69, 0.2);
+            border: 1px solid rgba(220, 53, 69, 0.4);
+            color: #ff6b6b;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .btn-logout:hover {
+            background: rgba(220, 53, 69, 0.3);
+            border-color: rgba(220, 53, 69, 0.6);
+        }
+
         /* Hero Content */
         .hero-content {
             flex: 1;
@@ -377,6 +448,16 @@
                 <li><a href="/alternatives">Alternatif</a></li>
                 <li><a href="/about">Tentang</a></li>
             </ul>
+            <div class="nav-actions">
+                <div id="authButtons" style="display: flex; gap: 1rem;">
+                    <a href="/login" class="btn-login">Masuk</a>
+                    <a href="/register" class="btn-register">Daftar</a>
+                </div>
+                <div id="userInfo" class="user-info" style="display: none;">
+                    <span class="user-name" id="userName"></span>
+                    <button class="btn-logout" onclick="logout()">Keluar</button>
+                </div>
+            </div>
             <button class="mobile-menu-btn">☰</button>
         </nav>
 
@@ -461,6 +542,47 @@
     </section>
 
     <script>
+        // Check authentication status
+        window.addEventListener('load', () => {
+            const token = localStorage.getItem('auth_token');
+            const user = localStorage.getItem('user');
+            
+            if (token && user) {
+                const userData = JSON.parse(user);
+                document.getElementById('authButtons').style.display = 'none';
+                document.getElementById('userInfo').style.display = 'flex';
+                document.getElementById('userName').textContent = userData.name;
+            } else {
+                document.getElementById('authButtons').style.display = 'flex';
+                document.getElementById('userInfo').style.display = 'none';
+            }
+        });
+
+        // Logout function
+        async function logout() {
+            const token = localStorage.getItem('auth_token');
+            
+            try {
+                await fetch('/api/logout', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'application/json'
+                    }
+                });
+            } catch (error) {
+                console.error('Logout error:', error);
+            } finally {
+                // Clear local storage
+                localStorage.removeItem('auth_token');
+                localStorage.removeItem('user');
+                localStorage.removeItem('remember_me');
+                
+                // Reload page
+                window.location.reload();
+            }
+        }
+
         // Smooth scroll
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
