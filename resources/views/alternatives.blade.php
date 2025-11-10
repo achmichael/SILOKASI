@@ -1,375 +1,530 @@
-@extends('layouts.app')
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alternatif Lokasi - SILOKASI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-@section('title', 'Alternatif Lokasi - SILOKASI')
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0a0a0a;
+            color: #fff;
+            min-height: 100vh;
+        }
 
-@section('content')
-<!-- Header -->
-<section class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-16">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h1 class="text-4xl md:text-5xl font-bold mb-4">Alternatif Lokasi</h1>
-        <p class="text-xl text-blue-100">5 Lokasi potensial untuk pembangunan perumahan</p>
+        /* Navigation */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 5%;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(218, 165, 32, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: 2px;
+            background: linear-gradient(135deg, #DAA520 0%, #FFD700 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #DAA520, #FFD700);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .nav-links a.active {
+            color: #DAA520;
+        }
+
+        /* Header */
+        .page-header {
+            background: linear-gradient(135deg, rgba(10,10,10,0.95) 0%, rgba(30,30,30,0.9) 100%),
+                        url('https://images.unsplash.com/photo-1582407947304-fd86f028f716?w=1920&q=80') center/cover;
+            padding: 5rem 5% 3rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 50% 50%, rgba(218, 165, 32, 0.1) 0%, transparent 70%);
+        }
+
+        .page-header h1 {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 900;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #fff 0%, #DAA520 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            position: relative;
+        }
+
+        .page-header p {
+            font-size: 1.2rem;
+            color: #ccc;
+            position: relative;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 4rem 5%;
+        }
+
+        /* Alternatives Grid */
+        .alternatives-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            gap: 2.5rem;
+        }
+
+        .alternative-card {
+            background: rgba(20, 20, 20, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid rgba(218, 165, 32, 0.2);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .alternative-card:hover {
+            transform: translateY(-10px);
+            border-color: rgba(218, 165, 32, 0.4);
+            box-shadow: 0 25px 60px rgba(218, 165, 32, 0.2);
+        }
+
+        .alternative-image {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            position: relative;
+        }
+
+        .alternative-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: linear-gradient(135deg, #DAA520 0%, #FFD700 100%);
+            color: #000;
+            padding: 0.5rem 1.5rem;
+            border-radius: 25px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+        }
+
+        .alternative-content {
+            padding: 2rem;
+        }
+
+        .alternative-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1rem;
+        }
+
+        .alternative-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 0.3rem;
+        }
+
+        .alternative-code {
+            color: #DAA520;
+            font-size: 0.9rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .alternative-rank {
+            font-size: 2.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #DAA520 0%, #FFD700 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .alternative-description {
+            color: #ccc;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .alternative-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .stat-item {
+            background: rgba(30, 30, 30, 0.5);
+            padding: 1rem;
+            border-radius: 10px;
+            border: 1px solid rgba(218, 165, 32, 0.1);
+        }
+
+        .stat-label {
+            color: #999;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.3rem;
+        }
+
+        .stat-value {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #DAA520;
+        }
+
+        /* Comparison Table */
+        .comparison-section {
+            margin-top: 4rem;
+            background: rgba(20, 20, 20, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 3rem;
+            border: 1px solid rgba(218, 165, 32, 0.2);
+        }
+
+        .section-title {
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            color: #DAA520;
+            text-align: center;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 1.2rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(218, 165, 32, 0.1);
+        }
+
+        th {
+            background: rgba(30, 30, 30, 0.5);
+            color: #DAA520;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.85rem;
+        }
+
+        td {
+            color: #ccc;
+        }
+
+        tr:hover {
+            background: rgba(218, 165, 32, 0.05);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .alternatives-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .alternative-stats {
+                grid-template-columns: 1fr;
+            }
+
+            table {
+                font-size: 0.85rem;
+            }
+
+            th, td {
+                padding: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="logo">SILOKASI</div>
+        <ul class="nav-links">
+            <li><a href="/">Beranda</a></li>
+            <li><a href="/results">Hasil Ranking</a></li>
+            <li><a href="/criteria">Kriteria</a></li>
+            <li><a href="/alternatives" class="active">Alternatif</a></li>
+            <li><a href="/about">Tentang</a></li>
+        </ul>
+    </nav>
+
+    <!-- Header -->
+    <div class="page-header">
+        <h1>Alternatif Lokasi</h1>
+        <p>5 lokasi perumahan yang dievaluasi dalam sistem</p>
     </div>
-</section>
 
-<!-- Alternatives Content -->
-<section class="py-16">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
-        <!-- Map Illustration -->
-        <div class="bg-white rounded-xl shadow-lg p-8 mb-12">
-            <h2 class="text-2xl font-bold text-gray-900 mb-6 text-center">
-                <i class="fas fa-map-marked-alt text-blue-600 mr-2"></i>
-                Peta Lokasi Alternatif
-            </h2>
-            <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-12 text-center">
-                <i class="fas fa-map text-blue-300 text-9xl mb-4"></i>
-                <p class="text-gray-600 text-lg">Wilayah Kabupaten Sukoharjo, Jawa Tengah</p>
-            </div>
-        </div>
-        
+    <!-- Main Content -->
+    <div class="container">
         <!-- Alternatives Grid -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            
-            <!-- Alternative 1: Gentan -->
-            <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover">
-                <div class="bg-gradient-to-r from-gray-400 to-gray-500 px-6 py-4 flex items-center justify-between">
-                    <div class="flex items-center space-x-3">
-                        <div class="bg-white w-12 h-12 rounded-full flex items-center justify-center">
-                            <span class="text-gray-700 font-bold text-xl">2</span>
-                        </div>
-                        <div>
-                            <h3 class="text-2xl font-bold text-white">Gentan</h3>
-                            <span class="text-gray-100 text-sm">Kode: A1</span>
-                        </div>
-                    </div>
-                    <span class="bg-white bg-opacity-20 px-4 py-2 rounded-lg text-white font-semibold">
-                        <i class="fas fa-medal mr-1"></i>Rank #2
-                    </span>
+        <div class="alternatives-grid">
+            <!-- A3 - Bekonang -->
+            <div class="alternative-card">
+                <div style="position: relative;">
+                    <img src="https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=800&q=80" alt="Bekonang" class="alternative-image">
+                    <div class="alternative-badge">🏆 TERBAIK</div>
                 </div>
-                <div class="p-6">
-                    <div class="mb-6">
-                        <div class="bg-gray-100 rounded-lg p-4 mb-4">
-                            <div class="flex items-center justify-between mb-2">
-                                <span class="text-sm text-gray-600">BORDA Points</span>
-                                <span class="text-2xl font-bold text-gray-700">7.5</span>
-                            </div>
-                            <div class="w-full bg-gray-200 rounded-full h-2">
-                                <div class="bg-gray-500 h-2 rounded-full" style="width: 89%"></div>
-                            </div>
+                <div class="alternative-content">
+                    <div class="alternative-header">
+                        <div>
+                            <h3 class="alternative-title">Bekonang</h3>
+                            <div class="alternative-code">Kode: A3</div>
                         </div>
-                        
-                        <p class="text-gray-600 mb-4">Lokasi Gentan merupakan alternatif terbaik kedua dengan aksesibilitas yang baik dan infrastruktur yang memadai.</p>
-                        
-                        <div class="grid grid-cols-3 gap-4 mb-4">
-                            <div class="text-center">
-                                <div class="bg-blue-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-2">
-                                    <i class="fas fa-road text-blue-600"></i>
-                                </div>
-                                <p class="text-xs text-gray-600">Akses Jalan</p>
-                                <p class="font-semibold text-gray-900">Baik</p>
-                            </div>
-                            <div class="text-center">
-                                <div class="bg-green-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-2">
-                                    <i class="fas fa-bolt text-green-600"></i>
-                                </div>
-                                <p class="text-xs text-gray-600">Infrastruktur</p>
-                                <p class="font-semibold text-gray-900">Lengkap</p>
-                            </div>
-                            <div class="text-center">
-                                <div class="bg-purple-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-2">
-                                    <i class="fas fa-chart-line text-purple-600"></i>
-                                </div>
-                                <p class="text-xs text-gray-600">Potensi</p>
-                                <p class="font-semibold text-gray-900">Tinggi</p>
-                            </div>
-                        </div>
+                        <div class="alternative-rank">#1</div>
                     </div>
-                    
-                    <div class="border-t pt-4">
-                        <h4 class="font-semibold text-gray-900 mb-3">Ranking per DM:</h4>
-                        <div class="flex items-center space-x-2">
-                            <span class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-semibold">DM1: #1</span>
-                            <span class="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm font-semibold">DM2: #2</span>
-                            <span class="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm font-semibold">DM3: #2</span>
+                    <p class="alternative-description">
+                        Lokasi dengan skor tertinggi. Unggul dalam prospek pengembangan, infrastruktur, dan kondisi lahan yang ideal untuk pembangunan perumahan.
+                    </p>
+                    <div class="alternative-stats">
+                        <div class="stat-item">
+                            <div class="stat-label">BORDA Score</div>
+                            <div class="stat-value">8.4</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">ANP Weight</div>
+                            <div class="stat-value">0.25</div>
                         </div>
                     </div>
                 </div>
             </div>
-            
-            <!-- Alternative 2: Palur Raya -->
-            <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover">
-                <div class="bg-gradient-to-r from-orange-400 to-orange-500 px-6 py-4 flex items-center justify-between">
-                    <div class="flex items-center space-x-3">
-                        <div class="bg-white w-12 h-12 rounded-full flex items-center justify-center">
-                            <span class="text-orange-700 font-bold text-xl">3</span>
-                        </div>
-                        <div>
-                            <h3 class="text-2xl font-bold text-white">Palur Raya</h3>
-                            <span class="text-orange-100 text-sm">Kode: A2</span>
-                        </div>
-                    </div>
-                    <span class="bg-white bg-opacity-20 px-4 py-2 rounded-lg text-white font-semibold">
-                        <i class="fas fa-award mr-1"></i>Rank #3
-                    </span>
+
+            <!-- A1 - Gentan -->
+            <div class="alternative-card">
+                <div style="position: relative;">
+                    <img src="https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=800&q=80" alt="Gentan" class="alternative-image">
+                    <div class="alternative-badge" style="background: linear-gradient(135deg, #C0C0C0, #E8E8E8);">🥈 RUNNER-UP</div>
                 </div>
-                <div class="p-6">
-                    <div class="mb-6">
-                        <div class="bg-orange-50 rounded-lg p-4 mb-4">
-                            <div class="flex items-center justify-between mb-2">
-                                <span class="text-sm text-gray-600">BORDA Points</span>
-                                <span class="text-2xl font-bold text-orange-700">3.8</span>
-                            </div>
-                            <div class="w-full bg-gray-200 rounded-full h-2">
-                                <div class="bg-orange-500 h-2 rounded-full" style="width: 45%"></div>
-                            </div>
+                <div class="alternative-content">
+                    <div class="alternative-header">
+                        <div>
+                            <h3 class="alternative-title">Gentan</h3>
+                            <div class="alternative-code">Kode: A1</div>
                         </div>
-                        
-                        <p class="text-gray-600 mb-4">Lokasi Palur Raya memiliki potensi yang cukup baik dengan harga lahan yang kompetitif.</p>
-                        
-                        <div class="grid grid-cols-3 gap-4 mb-4">
-                            <div class="text-center">
-                                <div class="bg-blue-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-2">
-                                    <i class="fas fa-road text-blue-600"></i>
-                                </div>
-                                <p class="text-xs text-gray-600">Akses Jalan</p>
-                                <p class="font-semibold text-gray-900">Cukup</p>
-                            </div>
-                            <div class="text-center">
-                                <div class="bg-green-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-2">
-                                    <i class="fas fa-bolt text-green-600"></i>
-                                </div>
-                                <p class="text-xs text-gray-600">Infrastruktur</p>
-                                <p class="font-semibold text-gray-900">Sedang</p>
-                            </div>
-                            <div class="text-center">
-                                <div class="bg-purple-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-2">
-                                    <i class="fas fa-chart-line text-purple-600"></i>
-                                </div>
-                                <p class="text-xs text-gray-600">Potensi</p>
-                                <p class="font-semibold text-gray-900">Sedang</p>
-                            </div>
-                        </div>
+                        <div class="alternative-rank">#2</div>
                     </div>
-                    
-                    <div class="border-t pt-4">
-                        <h4 class="font-semibold text-gray-900 mb-3">Ranking per DM:</h4>
-                        <div class="flex items-center space-x-2">
-                            <span class="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm font-semibold">DM1: #5</span>
-                            <span class="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm font-semibold">DM2: #4</span>
-                            <span class="bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-sm font-semibold">DM3: #3</span>
+                    <p class="alternative-description">
+                        Peringkat kedua dengan keunggulan aksesibilitas dan infrastruktur yang sudah berkembang baik di sekitar lokasi.
+                    </p>
+                    <div class="alternative-stats">
+                        <div class="stat-item">
+                            <div class="stat-label">BORDA Score</div>
+                            <div class="stat-value">7.5</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">ANP Weight</div>
+                            <div class="stat-value">0.20</div>
                         </div>
                     </div>
                 </div>
             </div>
-            
-            <!-- Alternative 3: Bekonang - BEST -->
-            <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover border-4 border-yellow-400">
-                <div class="bg-gradient-to-r from-yellow-400 to-yellow-500 px-6 py-4 flex items-center justify-between">
-                    <div class="flex items-center space-x-3">
-                        <div class="bg-white w-12 h-12 rounded-full flex items-center justify-center">
-                            <span class="text-yellow-700 font-bold text-xl">1</span>
-                        </div>
-                        <div>
-                            <h3 class="text-2xl font-bold text-white">Bekonang</h3>
-                            <span class="text-yellow-100 text-sm">Kode: A3</span>
-                        </div>
-                    </div>
-                    <span class="bg-white bg-opacity-20 px-4 py-2 rounded-lg text-white font-semibold">
-                        <i class="fas fa-trophy mr-1"></i>Rank #1
-                    </span>
+
+            <!-- A2 - Palur Raya -->
+            <div class="alternative-card">
+                <div style="position: relative;">
+                    <img src="https://images.unsplash.com/photo-1558036117-15d82a90b9b1?w=800&q=80" alt="Palur Raya" class="alternative-image">
+                    <div class="alternative-badge" style="background: linear-gradient(135deg, #CD7F32, #E6A85C);">🥉 3rd PLACE</div>
                 </div>
-                <div class="p-6">
-                    <div class="bg-yellow-50 px-4 py-2 rounded-lg mb-4 text-center">
-                        <span class="text-yellow-800 font-bold">🏆 LOKASI TERBAIK</span>
-                    </div>
-                    
-                    <div class="mb-6">
-                        <div class="bg-yellow-50 rounded-lg p-4 mb-4">
-                            <div class="flex items-center justify-between mb-2">
-                                <span class="text-sm text-gray-600">BORDA Points</span>
-                                <span class="text-2xl font-bold text-yellow-700">8.4</span>
-                            </div>
-                            <div class="w-full bg-gray-200 rounded-full h-2">
-                                <div class="bg-yellow-500 h-2 rounded-full" style="width: 100%"></div>
-                            </div>
+                <div class="alternative-content">
+                    <div class="alternative-header">
+                        <div>
+                            <h3 class="alternative-title">Palur Raya</h3>
+                            <div class="alternative-code">Kode: A2</div>
                         </div>
-                        
-                        <p class="text-gray-600 mb-4">Lokasi Bekonang merupakan pilihan terbaik dengan skor tertinggi dari konsensus Decision Makers.</p>
-                        
-                        <div class="grid grid-cols-3 gap-4 mb-4">
-                            <div class="text-center">
-                                <div class="bg-blue-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-2">
-                                    <i class="fas fa-road text-blue-600"></i>
-                                </div>
-                                <p class="text-xs text-gray-600">Akses Jalan</p>
-                                <p class="font-semibold text-gray-900">Sangat Baik</p>
-                            </div>
-                            <div class="text-center">
-                                <div class="bg-green-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-2">
-                                    <i class="fas fa-bolt text-green-600"></i>
-                                </div>
-                                <p class="text-xs text-gray-600">Infrastruktur</p>
-                                <p class="font-semibold text-gray-900">Sangat Baik</p>
-                            </div>
-                            <div class="text-center">
-                                <div class="bg-purple-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-2">
-                                    <i class="fas fa-chart-line text-purple-600"></i>
-                                </div>
-                                <p class="text-xs text-gray-600">Potensi</p>
-                                <p class="font-semibold text-gray-900">Sangat Tinggi</p>
-                            </div>
-                        </div>
+                        <div class="alternative-rank">#3</div>
                     </div>
-                    
-                    <div class="border-t pt-4">
-                        <h4 class="font-semibold text-gray-900 mb-3">Ranking per DM:</h4>
-                        <div class="flex items-center space-x-2">
-                            <span class="bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-sm font-semibold">DM1: #3</span>
-                            <span class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-semibold">DM2: #1</span>
-                            <span class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-semibold">DM3: #1</span>
+                    <p class="alternative-description">
+                        Lokasi dengan potensi pengembangan masa depan yang baik, didukung rencana infrastruktur daerah yang progresif.
+                    </p>
+                    <div class="alternative-stats">
+                        <div class="stat-item">
+                            <div class="stat-label">BORDA Score</div>
+                            <div class="stat-value">3.8</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">ANP Weight</div>
+                            <div class="stat-value">0.18</div>
                         </div>
                     </div>
                 </div>
             </div>
-            
-            <!-- Alternative 4: Makamhaji -->
-            <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover">
-                <div class="bg-gradient-to-r from-blue-400 to-blue-500 px-6 py-4 flex items-center justify-between">
-                    <div class="flex items-center space-x-3">
-                        <div class="bg-white w-12 h-12 rounded-full flex items-center justify-center">
-                            <span class="text-blue-700 font-bold text-xl">4</span>
-                        </div>
-                        <div>
-                            <h3 class="text-2xl font-bold text-white">Makamhaji</h3>
-                            <span class="text-blue-100 text-sm">Kode: A4</span>
-                        </div>
-                    </div>
-                    <span class="bg-white bg-opacity-20 px-4 py-2 rounded-lg text-white font-semibold">
-                        Rank #4
-                    </span>
+
+            <!-- A4 - Makamhaji -->
+            <div class="alternative-card">
+                <div style="position: relative;">
+                    <img src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800&q=80" alt="Makamhaji" class="alternative-image">
                 </div>
-                <div class="p-6">
-                    <div class="mb-6">
-                        <div class="bg-blue-50 rounded-lg p-4 mb-4">
-                            <div class="flex items-center justify-between mb-2">
-                                <span class="text-sm text-gray-600">BORDA Points</span>
-                                <span class="text-2xl font-bold text-blue-700">3.2</span>
-                            </div>
-                            <div class="w-full bg-gray-200 rounded-full h-2">
-                                <div class="bg-blue-500 h-2 rounded-full" style="width: 38%"></div>
-                            </div>
+                <div class="alternative-content">
+                    <div class="alternative-header">
+                        <div>
+                            <h3 class="alternative-title">Makamhaji</h3>
+                            <div class="alternative-code">Kode: A4</div>
                         </div>
-                        
-                        <p class="text-gray-600 mb-4">Lokasi Makamhaji memiliki potensi pengembangan dengan beberapa aspek yang perlu ditingkatkan.</p>
-                        
-                        <div class="grid grid-cols-3 gap-4 mb-4">
-                            <div class="text-center">
-                                <div class="bg-blue-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-2">
-                                    <i class="fas fa-road text-blue-600"></i>
-                                </div>
-                                <p class="text-xs text-gray-600">Akses Jalan</p>
-                                <p class="font-semibold text-gray-900">Cukup</p>
-                            </div>
-                            <div class="text-center">
-                                <div class="bg-green-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-2">
-                                    <i class="fas fa-bolt text-green-600"></i>
-                                </div>
-                                <p class="text-xs text-gray-600">Infrastruktur</p>
-                                <p class="font-semibold text-gray-900">Berkembang</p>
-                            </div>
-                            <div class="text-center">
-                                <div class="bg-purple-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-2">
-                                    <i class="fas fa-chart-line text-purple-600"></i>
-                                </div>
-                                <p class="text-xs text-gray-600">Potensi</p>
-                                <p class="font-semibold text-gray-900">Cukup</p>
-                            </div>
-                        </div>
+                        <div class="alternative-rank">#4</div>
                     </div>
-                    
-                    <div class="border-t pt-4">
-                        <h4 class="font-semibold text-gray-900 mb-3">Ranking per DM:</h4>
-                        <div class="flex items-center space-x-2">
-                            <span class="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm font-semibold">DM1: #2</span>
-                            <span class="bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-sm font-semibold">DM2: #3</span>
-                            <span class="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm font-semibold">DM3: #4</span>
+                    <p class="alternative-description">
+                        Memiliki keunggulan pada aspek legalitas lahan dan kesesuaian dengan peruntukan tata ruang wilayah.
+                    </p>
+                    <div class="alternative-stats">
+                        <div class="stat-item">
+                            <div class="stat-label">BORDA Score</div>
+                            <div class="stat-value">3.2</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">ANP Weight</div>
+                            <div class="stat-value">0.19</div>
                         </div>
                     </div>
                 </div>
             </div>
-            
-            <!-- Alternative 5: Baturetno -->
-            <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover lg:col-span-2">
-                <div class="bg-gradient-to-r from-purple-400 to-purple-500 px-6 py-4 flex items-center justify-between">
-                    <div class="flex items-center space-x-3">
-                        <div class="bg-white w-12 h-12 rounded-full flex items-center justify-center">
-                            <span class="text-purple-700 font-bold text-xl">5</span>
-                        </div>
-                        <div>
-                            <h3 class="text-2xl font-bold text-white">Baturetno</h3>
-                            <span class="text-purple-100 text-sm">Kode: A5</span>
-                        </div>
-                    </div>
-                    <span class="bg-white bg-opacity-20 px-4 py-2 rounded-lg text-white font-semibold">
-                        Rank #5
-                    </span>
+
+            <!-- A5 - Baturetno -->
+            <div class="alternative-card">
+                <div style="position: relative;">
+                    <img src="https://images.unsplash.com/photo-1605146769289-440113cc3d00?w=800&q=80" alt="Baturetno" class="alternative-image">
                 </div>
-                <div class="p-6">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="alternative-content">
+                    <div class="alternative-header">
                         <div>
-                            <div class="bg-purple-50 rounded-lg p-4 mb-4">
-                                <div class="flex items-center justify-between mb-2">
-                                    <span class="text-sm text-gray-600">BORDA Points</span>
-                                    <span class="text-2xl font-bold text-purple-700">3.1</span>
-                                </div>
-                                <div class="w-full bg-gray-200 rounded-full h-2">
-                                    <div class="bg-purple-500 h-2 rounded-full" style="width: 37%"></div>
-                                </div>
-                            </div>
-                            
-                            <p class="text-gray-600 mb-4">Lokasi Baturetno memiliki ruang untuk berkembang dengan perhatian pada peningkatan aksesibilitas dan infrastruktur.</p>
+                            <h3 class="alternative-title">Baturetno</h3>
+                            <div class="alternative-code">Kode: A5</div>
                         </div>
-                        
-                        <div>
-                            <div class="grid grid-cols-3 gap-4 mb-4">
-                                <div class="text-center">
-                                    <div class="bg-blue-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-2">
-                                        <i class="fas fa-road text-blue-600"></i>
-                                    </div>
-                                    <p class="text-xs text-gray-600">Akses Jalan</p>
-                                    <p class="font-semibold text-gray-900">Perlu Ditingkatkan</p>
-                                </div>
-                                <div class="text-center">
-                                    <div class="bg-green-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-2">
-                                        <i class="fas fa-bolt text-green-600"></i>
-                                    </div>
-                                    <p class="text-xs text-gray-600">Infrastruktur</p>
-                                    <p class="font-semibold text-gray-900">Berkembang</p>
-                                </div>
-                                <div class="text-center">
-                                    <div class="bg-purple-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-2">
-                                        <i class="fas fa-chart-line text-purple-600"></i>
-                                    </div>
-                                    <p class="text-xs text-gray-600">Potensi</p>
-                                    <p class="font-semibold text-gray-900">Masa Depan</p>
-                                </div>
-                            </div>
-                            
-                            <div class="border-t pt-4">
-                                <h4 class="font-semibold text-gray-900 mb-3">Ranking per DM:</h4>
-                                <div class="flex items-center space-x-2">
-                                    <span class="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm font-semibold">DM1: #4</span>
-                                    <span class="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm font-semibold">DM2: #5</span>
-                                    <span class="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm font-semibold">DM3: #5</span>
-                                </div>
-                            </div>
+                        <div class="alternative-rank">#5</div>
+                    </div>
+                    <p class="alternative-description">
+                        Lokasi dengan nilai estetika tinggi dan pemandangan menarik, cocok untuk perumahan dengan konsep premium view.
+                    </p>
+                    <div class="alternative-stats">
+                        <div class="stat-item">
+                            <div class="stat-label">BORDA Score</div>
+                            <div class="stat-value">3.1</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">ANP Weight</div>
+                            <div class="stat-value">0.16</div>
                         </div>
                     </div>
                 </div>
             </div>
-            
         </div>
-        
+
+        <!-- Comparison Table -->
+        <div class="comparison-section">
+            <h2 class="section-title">Tabel Perbandingan Alternatif</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Kode</th>
+                        <th>Nama Lokasi</th>
+                        <th>BORDA Score</th>
+                        <th>ANP Weight</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>1</strong></td>
+                        <td>A3</td>
+                        <td>Bekonang</td>
+                        <td><strong>8.4</strong></td>
+                        <td>0.25</td>
+                        <td><span style="color: #DAA520;">⭐ Terbaik</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>2</strong></td>
+                        <td>A1</td>
+                        <td>Gentan</td>
+                        <td><strong>7.5</strong></td>
+                        <td>0.20</td>
+                        <td><span style="color: #C0C0C0;">⭐ Sangat Baik</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>3</strong></td>
+                        <td>A2</td>
+                        <td>Palur Raya</td>
+                        <td><strong>3.8</strong></td>
+                        <td>0.18</td>
+                        <td><span style="color: #CD7F32;">⭐ Baik</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>4</strong></td>
+                        <td>A4</td>
+                        <td>Makamhaji</td>
+                        <td><strong>3.2</strong></td>
+                        <td>0.19</td>
+                        <td><span style="color: #999;">⭐ Cukup</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>5</strong></td>
+                        <td>A5</td>
+                        <td>Baturetno</td>
+                        <td><strong>3.1</strong></td>
+                        <td>0.16</td>
+                        <td><span style="color: #999;">⭐ Cukup</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
-</section>
-@endsection
+</body>
+</html>

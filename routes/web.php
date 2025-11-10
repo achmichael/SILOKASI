@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::get('/', function () {
-    return view('home');
+    return view('home-premium');
 });
 
 Route::get('/criteria', function () {
