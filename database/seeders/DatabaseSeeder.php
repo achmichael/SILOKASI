@@ -15,7 +15,6 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Seed GDSS ANP-BORDA Housing Site Selection Data
         $this->call([
             UsersTableSeeder::class,
             CriteriaTableSeeder::class,
