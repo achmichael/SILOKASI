@@ -1,9 +1,11 @@
 <?php
 
 use App\Http\Controllers\AlternativeComparisonController;
+use App\Http\Controllers\AlternativeController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ConsensusController;
 use App\Http\Controllers\CriteriaComparisonController;
+use App\Http\Controllers\CriteriaController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/register', [AuthController::class, 'register']);
@@ -14,6 +16,24 @@ Route::middleware('')->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
     Route::post('/refresh-token', [AuthController::class, 'refresh']);
     Route::post('/revoke-all-tokens', [AuthController::class, 'revokeAll']);
+    
+    // Criteria CRUD
+    Route::prefix('/criteria')->group(function () {
+        Route::get('/', [CriteriaController::class, 'index']);
+        Route::post('/', [CriteriaController::class, 'store']);
+        Route::get('/{id}', [CriteriaController::class, 'show']);
+        Route::put('/{id}', [CriteriaController::class, 'update']);
+        Route::delete('/{id}', [CriteriaController::class, 'destroy']);
+    });
+
+    // Alternatives CRUD
+    Route::prefix('/alternatives')->group(function () {
+        Route::get('/', [AlternativeController::class, 'index']);
+        Route::post('/', [AlternativeController::class, 'store']);
+        Route::get('/{id}', [AlternativeController::class, 'show']);
+        Route::put('/{id}', [AlternativeController::class, 'update']);
+        Route::delete('/{id}', [AlternativeController::class, 'destroy']);
+    });
     
     Route::prefix('/criteria-comparison')->group(function () {
         Route::post('/comparisons', [CriteriaComparisonController::class, 'storeComparisons']);

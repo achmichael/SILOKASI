@@ -769,11 +769,11 @@
             <div style="margin-bottom: 3rem;">
                 <h3 style="margin-bottom: 1.5rem; font-size: 1.3rem; font-weight: 700;">Quick Actions</h3>
                 <div class="quick-actions">
-                    <a href="/criteria" class="action-btn">
+                    <a href="javascript:void(0)" onclick="openModal('addCriteriaModal')" class="action-btn">
                         <span class="action-icon">➕</span>
                         <span>Add Criteria</span>
                     </a>
-                    <a href="/alternatives" class="action-btn">
+                    <a href="javascript:void(0)" onclick="openModal('addAlternativeModal')" class="action-btn">
                         <span class="action-icon">📍</span>
                         <span>Add Alternative</span>
                     </a>
@@ -845,6 +845,9 @@
             </div>
         </main>
     </div>
+
+    <!-- Include Add Item Modal Component -->
+    @include('components.add-item-modal')
 
     <script>
         // Menu Toggle
