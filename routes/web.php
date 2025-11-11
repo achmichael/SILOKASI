@@ -34,3 +34,11 @@ Route::get('/register', function () {
 Route::get('/dashboard', function () {
     return view('dashboard');
 });
+
+Route::get('/decision-makers', function () {
+    return view('decision-makers');
+});
+
+Route::get('/settings', function () {
+    return view('settings');
+});
