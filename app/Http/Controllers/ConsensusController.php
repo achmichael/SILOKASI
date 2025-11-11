@@ -8,7 +8,6 @@ use App\Models\DmRanking;
 use App\Models\BordaResult;
 use App\Models\User;
 use App\Services\BordaCalculationService;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 

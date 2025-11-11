@@ -1,5 +1,3 @@
-Pada website ini menggunakan SPK ANP yang mendukung interdependent kriteria dan juga alternatif, kasus seperti ini yang tidak bisa ditangani oleh SPK lain seperti SAW, WP, AHP karena mereka independent setiap alternatif dan kriteria nya, karena pada kasus nyata sering kali kriteria saling mempengaruhi satu sama lain seperti kasus yang diselesaikan pembuatan project ini dimana pemilihan lokasi, dimana harga sangat bergantung pada luas, letak strategis, dan masih banyak faktor lainnya yang dapat mempengaruhi kriteria harga.
-
 ---
 
 # Panduan Penggunaan API - ANP-Borda Group Decision Support System
@@ -11,10 +9,11 @@ http://localhost:8090/api
 
 ## Arsitektur Sistem
 
-Sistem ini menggunakan 3 komponen utama:
-1. **ANP (Analytic Network Process)** - Untuk menangani interdependensi antar kriteria dan alternatif
-2. **Borda Count Method** - Untuk agregasi preferensi dari multiple decision makers
-3. **Laravel Sanctum** - Untuk autentikasi berbasis token
+Sistem ini menggunakan 4 komponen utama:
+1. **ANP (Analytic Network Process)** - Untuk menangani interdependensi antar kriteria dan menghitung bobot lokal alternatif
+2. **Weighted Product (WP)** - Untuk menghitung skor akhir alternatif dengan formula perkalian berpangkat
+3. **Borda Count Method** - Untuk agregasi preferensi dari multiple decision makers
+4. **Laravel Sanctum** - Untuk autentikasi berbasis token
 
 ---
 
@@ -356,6 +355,20 @@ Authorization: Bearer {token_dm1}
 #### 3.3 Hitung Bobot Final ANP (Setiap DM)
 **Endpoint:** `POST /api/alternatives/calculate-final-weights`
 
+**Metode:** **Weighted Product (WP)**
+
+**Formula:** 
+```
+S(Ai) = Π (rij ^ wj)
+j=1 to n
+
+dimana:
+- S(Ai) = Score alternatif ke-i
+- rij = Local weight alternatif i pada kriteria j
+- wj = Weight kriteria j
+- Π = Perkalian (product)
+```
+
 **Header:**
 ```
 Authorization: Bearer {token_dm1}
@@ -372,9 +385,10 @@ Authorization: Bearer {token_dm1}
 ```json
 {
   "success": true,
-  "message": "Final ANP weights calculated successfully",
+  "message": "Final weights calculated successfully using Weighted Product (WP) method",
   "data": {
     "user_id": "9d5e8c77-1234-5678-9abc-def012345678",
+    "method": "Weighted Product (WP)",
     "final_weights": [
       {
         "alternative_id": 1,
@@ -399,7 +413,7 @@ Authorization: Bearer {token_dm1}
 }
 ```
 
-**Catatan:** Final Weight = Σ (Local Weight × Criteria Weight)
+**Catatan:** Final Weight = Π (Local Weight ^ Criteria Weight) untuk semua kriteria
 
 ---
 

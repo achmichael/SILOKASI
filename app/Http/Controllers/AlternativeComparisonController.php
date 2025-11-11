@@ -8,6 +8,7 @@ use App\Models\PairwiseComparisonAlternative;
 use App\Models\AnpAlternativeWeight;
 use App\Models\AnpCriteriaWeight;
 use App\Services\ANPCalculationService;
+use App\Services\WeightedProductService;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
@@ -16,10 +17,12 @@ use Illuminate\Support\Facades\Validator;
 class AlternativeComparisonController extends Controller
 {
     protected ANPCalculationService $anpService;
+    protected WeightedProductService $wpService;
     
-    public function __construct(ANPCalculationService $anpService)
+    public function __construct(ANPCalculationService $anpService, WeightedProductService $wpService)
     {
         $this->anpService = $anpService;
+        $this->wpService = $wpService;
     }
     
     /**
@@ -201,7 +204,8 @@ class AlternativeComparisonController extends Controller
     
     /**
      * Calculate final ANP weights for all alternatives by a specific DM.
-     * Combines local weights with global criteria weights.
+     * Uses Weighted Product (WP) method to combine local weights with global criteria weights.
+     * Formula: S(Ai) = Π (rij ^ wj) where rij = local weight, wj = criteria weight
      * 
      * @param Request $request
      * @return JsonResponse
@@ -237,11 +241,11 @@ class AlternativeComparisonController extends Controller
             $alternatives = Alternative::orderBy('id')->get();
             $alternativeIds = $alternatives->pluck('id')->toArray();
             
-            // Initialize final weights array
-            $finalWeights = array_fill_keys($alternativeIds, 0);
+            // Initialize final weights array with 1 (for multiplication)
+            $finalWeights = array_fill_keys($alternativeIds, 1);
             $detailedCalculations = [];
             
-            // For each criteria, calculate local weights and multiply by criteria weight
+            // For each criteria, calculate local weights and apply Weighted Product method
             foreach ($criteria as $criterion) {
                 $criteriaWeight = $criteriaWeights->firstWhere('criteria_id', $criterion->id);
                 
@@ -282,18 +286,20 @@ class AlternativeComparisonController extends Controller
                     'local_weights' => []
                 ];
                 
-                // Multiply local weights by criteria weight and add to final weights
+                // Weighted Product: multiply S(Ai) by (local_weight ^ criteria_weight)
                 foreach ($alternativeIds as $index => $alternativeId) {
                     $localWeight = $localWeights[$index];
-                    $weightedValue = $localWeight * $criteriaWeight->weight;
-                    $finalWeights[$alternativeId] += $weightedValue;
+                    
+                    // Use WP Service to calculate power value
+                    $powerValue = $this->wpService->calculatePowerValue($localWeight, $criteriaWeight->weight);
+                    $finalWeights[$alternativeId] *= $powerValue > 0 ? $powerValue : 1;
                     
                     $alternative = $alternatives->find($alternativeId);
                     $criterionDetail['local_weights'][] = [
                         'alternative_id' => $alternativeId,
                         'alternative_name' => $alternative->name,
                         'local_weight' => round($localWeight, 6),
-                        'weighted_value' => round($weightedValue, 6)
+                        'power_value' => round($powerValue, 6)
                     ];
                 }
                 
@@ -336,9 +342,10 @@ class AlternativeComparisonController extends Controller
             
             return response()->json([
                 'success' => true,
-                'message' => 'Final ANP weights calculated successfully',
+                'message' => 'Final weights calculated successfully using Weighted Product (WP) method',
                 'data' => [
                     'user_id' => $userId,
+                    'method' => 'Weighted Product (WP)',
                     'final_weights' => $finalWeightsData,
                     'detailed_calculations' => $detailedCalculations
                 ]
@@ -358,10 +365,10 @@ class AlternativeComparisonController extends Controller
     /**
      * Get final ANP weights for a specific DM.
      * 
-     * @param int $userId
+     * @param string $userId
      * @return JsonResponse
      */
-    public function getFinalWeights(int $userId): JsonResponse
+    public function getFinalWeights(string $userId): JsonResponse
     {
         try {
             $weights = AnpAlternativeWeight::with('alternative')
@@ -408,7 +415,7 @@ class AlternativeComparisonController extends Controller
      * @param int $criteriaId
      * @return JsonResponse
      */
-    public function getComparisons(int $userId, int $criteriaId): JsonResponse
+    public function getComparisons(string $userId, string $criteriaId): JsonResponse
     {
         try {
             $comparisons = PairwiseComparisonAlternative::with(['alternative1', 'alternative2', 'criteria'])
