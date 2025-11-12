@@ -122,6 +122,41 @@
             margin-bottom: 0.5rem;
         }
 
+        .nav-item.has-children .nav-parent {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            justify-content: space-between;
+            /* reset default button look so it matches regular nav links when not hovered */
+            background: transparent;
+            border: none;
+            color: inherit;
+            cursor: pointer;
+            appearance: none;
+            -webkit-appearance: none;
+            text-align: left;
+            font: inherit;
+            border-radius: 12px; /* keep same radius as .nav-link */
+        }
+
+        /* keep visible keyboard focus without changing idle background */
+        .nav-item.has-children .nav-parent:focus-visible {
+            outline: 2px solid rgba(249, 195, 73, 0.6);
+            outline-offset: 2px;
+        }
+
+        .chevron {
+            margin-left: auto;
+            transition: transform 0.25s ease;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .nav-item.open .chevron {
+            transform: rotate(180deg);
+        }
+
         .nav-link {
             display: flex;
             align-items: center;
@@ -171,6 +206,29 @@
             font-size: 1.3rem;
             width: 24px;
             text-align: center;
+        }
+
+        /* Submenu */
+        .submenu {
+            list-style: none;
+            padding: 0.3rem 0 0.4rem;
+            margin: 0.2rem 0 0.4rem;
+            display: none;
+        }
+
+        .nav-item.open > .submenu {
+            display: block;
+        }
+
+        .submenu .nav-link {
+            padding: 0.75rem 1.5rem 0.75rem 2.6rem; /* indent */
+            background: transparent;
+            color: #bbb;
+        }
+
+        .submenu .nav-link:hover {
+            background: rgba(249, 195, 73, 0.08);
+            color: #F9C349;
         }
 
         /* Main Content */
@@ -634,22 +692,41 @@
 
             <ul class="nav-menu">
                 <li class="nav-item">
-                    <a href="/dashboard" class="nav-link active">
+                    <a href="/dashboard" class="nav-link">
                         <span class="nav-icon">📊</span>
                         <span>Dashboard</span>
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a href="/criteria" class="nav-link">
+                <li class="nav-item has-children" data-menu="kriteria">
+                    <button type="button" class="nav-link nav-parent" aria-haspopup="true" aria-expanded="false">
                         <span class="nav-icon">📋</span>
                         <span>Kriteria</span>
-                    </a>
+                        <span class="chevron">▾</span>
+                    </button>
+                    <ul class="submenu">
+                        <li>
+                            <a href="/criteria" class="nav-link" data-submenu="daftar-kriteria">Daftar Kriteria</a>
+                        </li>
+                        <li>
+                            <a href="/criteria-comparison" class="nav-link" data-submenu="perbandingan-kriteria">Perbandingan Kriteria</a>
+                        </li>
+                    </ul>
                 </li>
-                <li class="nav-item">
-                    <a href="/alternatives" class="nav-link">
+
+                <li class="nav-item has-children" data-menu="alternatif">
+                    <button type="button" class="nav-link nav-parent" aria-haspopup="true" aria-expanded="false">
                         <span class="nav-icon">📍</span>
                         <span>Alternatif</span>
-                    </a>
+                        <span class="chevron">▾</span>
+                    </button>
+                    <ul class="submenu">
+                        <li>
+                            <a href="/alternatives" class="nav-link" data-submenu="daftar-alternatif">Daftar Alternatif</a>
+                        </li>
+                        <li>
+                            <a href="/alternative-comparison" class="nav-link" data-submenu="perbandingan-alternatif">Perbandingan Alternatif</a>
+                        </li>
+                    </ul>
                 </li>
                 <li class="nav-item">
                     <a href="/results" class="nav-link">
@@ -980,6 +1057,43 @@
                 }
             });
         });
+
+        // Sidebar submenu toggle and active state
+        (function initSidebar() {
+            const parents = document.querySelectorAll('.nav-item.has-children .nav-parent');
+            parents.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const item = btn.closest('.nav-item.has-children');
+                    const isOpen = item.classList.toggle('open');
+                    btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+                });
+            });
+
+            // Active link highlight + auto-open parent
+            const current = window.location.pathname.replace(/\/$/, ''); // trim trailing slash
+            // mark exact match in submenu first
+            let activeLink = document.querySelector(`.submenu a.nav-link[href='${current}'], .submenu a.nav-link[href='${current}/']`);
+            if (!activeLink) {
+                // try top-level
+                activeLink = document.querySelector(`.nav-menu > .nav-item > a.nav-link[href='${current}'], .nav-menu > .nav-item > a.nav-link[href='${current}/']`);
+            }
+
+            if (activeLink) {
+                activeLink.classList.add('active');
+                const parentItem = activeLink.closest('.nav-item.has-children');
+                if (parentItem) {
+                    parentItem.classList.add('open');
+                    const parentBtn = parentItem.querySelector('.nav-parent');
+                    if (parentBtn) parentBtn.setAttribute('aria-expanded', 'true');
+                }
+            } else {
+                // Default active for /dashboard
+                if (current === '' || current === '/dashboard') {
+                    const dashboardLink = document.querySelector("a.nav-link[href='/dashboard']");
+                    if (dashboardLink) dashboardLink.classList.add('active');
+                }
+            }
+        })();
     </script>
 </body>
 </html>

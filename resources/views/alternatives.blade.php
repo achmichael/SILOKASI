@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alternatif - SILOKASI</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         * {
             margin: 0;
@@ -560,9 +561,27 @@
                     </a>
                 </li>
                 <li class="nav-item">
+                    <a href="/criteria-comparison" class="nav-link">
+                        <span class="nav-icon">⚖️</span>
+                        <span>Perbandingan Kriteria</span>
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a href="/alternatives" class="nav-link active">
                         <span class="nav-icon">📍</span>
                         <span>Alternatif</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/alternative-comparison" class="nav-link">
+                        <span class="nav-icon">�</span>
+                        <span>Perbandingan Alternatif</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/consensus-ranking" class="nav-link">
+                        <span class="nav-icon">👥</span>
+                        <span>Konsensus Ranking</span>
                     </a>
                 </li>
                 <li class="nav-item">
@@ -572,27 +591,9 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="/decision-makers" class="nav-link">
-                        <span class="nav-icon">👥</span>
-                        <span>Decision Makers</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="/settings" class="nav-link">
-                        <span class="nav-icon">⚙️</span>
-                        <span>Settings</span>
-                    </a>
-                </li>
-                <li class="nav-item">
                     <a href="/about" class="nav-link">
                         <span class="nav-icon">ℹ️</span>
                         <span>About</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="/" class="nav-link">
-                        <span class="nav-icon">🏠</span>
-                        <span>Homepage</span>
                     </a>
                 </li>
             </ul>
@@ -827,15 +828,34 @@
                 const result = await response.json();
 
                 if (result.success) {
-                    alert(id ? 'Alternatif berhasil diupdate!' : 'Alternatif berhasil ditambahkan!');
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil!',
+                        text: id ? 'Alternatif berhasil diupdate!' : 'Alternatif berhasil ditambahkan!',
+                        background: 'rgba(20, 20, 20, 0.95)',
+                        color: '#fff',
+                        timer: 1500
+                    });
                     closeModal();
                     fetchAlternatives();
                 } else {
-                    alert('Error: ' + (result.message || 'Gagal menyimpan data'));
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: result.message || 'Gagal menyimpan data',
+                        background: 'rgba(20, 20, 20, 0.95)',
+                        color: '#fff'
+                    });
                 }
             } catch (error) {
                 console.error('Error saving alternative:', error);
-                alert('Terjadi kesalahan saat menyimpan data');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Terjadi kesalahan saat menyimpan data',
+                    background: 'rgba(20, 20, 20, 0.95)',
+                    color: '#fff'
+                });
             }
         });
 
@@ -847,7 +867,19 @@
         };
 
         window.deleteAlternative = async function(id) {
-            if (!confirm('Apakah Anda yakin ingin menghapus alternatif ini?')) {
+            const result = await Swal.fire({
+                title: 'Hapus Alternatif?',
+                text: 'Apakah Anda yakin ingin menghapus alternatif ini?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, Hapus!',
+                cancelButtonText: 'Batal',
+                background: 'rgba(20, 20, 20, 0.95)',
+                color: '#fff',
+                confirmButtonColor: '#d33'
+            });
+            
+            if (!result.isConfirmed) {
                 return;
             }
 
@@ -859,14 +891,33 @@
                 const result = await response.json();
 
                 if (result.success) {
-                    alert('Alternatif berhasil dihapus!');
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Terhapus!',
+                        text: 'Alternatif berhasil dihapus!',
+                        background: 'rgba(20, 20, 20, 0.95)',
+                        color: '#fff',
+                        timer: 1500
+                    });
                     fetchAlternatives();
                 } else {
-                    alert('Error: ' + (result.message || 'Gagal menghapus data'));
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: result.message || 'Gagal menghapus data',
+                        background: 'rgba(20, 20, 20, 0.95)',
+                        color: '#fff'
+                    });
                 }
             } catch (error) {
                 console.error('Error deleting alternative:', error);
-                alert('Terjadi kesalahan saat menghapus data');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Terjadi kesalahan saat menghapus data',
+                    background: 'rgba(20, 20, 20, 0.95)',
+                    color: '#fff'
+                });
             }
         };
 

@@ -42,3 +42,15 @@ Route::get('/decision-makers', function () {
 Route::get('/settings', function () {
     return view('settings');
 });
+
+Route::get('/criteria-comparison', function () {
+    return view('criteria-comparison');
+});
+
+Route::get('/alternative-comparison', function () {
+    return view('alternative-comparison');
+});
+
+Route::get('/consensus-ranking', function () {
+    return view('consensus-ranking');
+});
