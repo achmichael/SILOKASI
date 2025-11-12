@@ -746,18 +746,6 @@
                         <span>Settings</span>
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a href="/about" class="nav-link">
-                        <span class="nav-icon">ℹ️</span>
-                        <span>About</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="/" class="nav-link">
-                        <span class="nav-icon">🏠</span>
-                        <span>Homepage</span>
-                    </a>
-                </li>
             </ul>
         </aside>
 
