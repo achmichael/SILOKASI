@@ -20,6 +20,10 @@
         .logo-subtitle { font-size: 0.75rem; color: #888; letter-spacing: 1px; margin-top: 0.3rem; }
         .nav-menu { list-style: none; padding: 0 1rem; }
         .nav-item { margin-bottom: 0.5rem; }
+        .nav-item.has-children .nav-parent { width: 100%; display: flex; align-items: center; gap: 1rem; justify-content: space-between; background: transparent; border: none; color: inherit; cursor: pointer; appearance: none; -webkit-appearance: none; text-align: left; font: inherit; border-radius: 12px; }
+        .nav-item.has-children .nav-parent:focus-visible { outline: 2px solid rgba(249, 195, 73, 0.6); outline-offset: 2px; }
+        .chevron { margin-left: auto; transition: transform 0.25s ease; font-size: 0.9rem; opacity: 0.8; }
+        .nav-item.open .chevron { transform: rotate(180deg); }
         .nav-link { display: flex; align-items: center; gap: 1rem; padding: 1rem 1.5rem; color: #ccc; text-decoration: none; border-radius: 12px; transition: all 0.3s ease; position: relative; overflow: hidden; }
         .nav-link::before { content: ''; position: absolute; left: 0; top: 0; width: 4px; height: 100%; background: linear-gradient(180deg, #F9C349, #FFD700); transform: scaleY(0); transition: transform 0.3s ease; }
         .nav-link:hover { background: rgba(249, 195, 73, 0.1); color: #F9C349; transform: translateX(5px); }
@@ -27,6 +31,10 @@
         .nav-link.active { background: rgba(249, 195, 73, 0.15); color: #F9C349; font-weight: 600; }
         .nav-link.active::before { transform: scaleY(1); }
         .nav-icon { font-size: 1.3rem; width: 24px; text-align: center; }
+        .submenu { list-style: none; padding: 0.3rem 0 0.4rem; margin: 0.2rem 0 0.4rem; display: none; }
+        .nav-item.open > .submenu { display: block; }
+        .submenu .nav-link { padding: 0.75rem 1.5rem 0.75rem 2.6rem; background: transparent; color: #bbb; }
+        .submenu .nav-link:hover { background: rgba(249, 195, 73, 0.08); color: #F9C349; }
         .main-content { flex: 1; margin-left: 280px; padding: 2rem; transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .main-content.expanded { margin-left: 0; }
         .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 3rem; padding: 1.5rem 2rem; background: rgba(20, 20, 20, 0.8); backdrop-filter: blur(20px); border-radius: 16px; border: 1px solid rgba(249, 195, 73, 0.15); }
@@ -59,22 +67,9 @@
 <body>
     <div class="bg-decoration"></div>
     <div class="dashboard-layout">
-        <aside class="sidebar" id="sidebar">
-            <div class="sidebar-logo">
-                <div class="logo-text">SILOKASI</div>
-                <div class="logo-subtitle">DASHBOARD</div>
-            </div>
-            <ul class="nav-menu">
-                <li class="nav-item"><a href="/dashboard" class="nav-link"><span class="nav-icon">📊</span><span>Dashboard</span></a></li>
-                <li class="nav-item"><a href="/criteria" class="nav-link"><span class="nav-icon">📋</span><span>Kriteria</span></a></li>
-                <li class="nav-item"><a href="/alternatives" class="nav-link"><span class="nav-icon">📍</span><span>Alternatif</span></a></li>
-                <li class="nav-item"><a href="/results" class="nav-link active"><span class="nav-icon">🏆</span><span>Hasil Ranking</span></a></li>
-                <li class="nav-item"><a href="/decision-makers" class="nav-link"><span class="nav-icon">👥</span><span>Decision Makers</span></a></li>
-                <li class="nav-item"><a href="/settings" class="nav-link"><span class="nav-icon">⚙️</span><span>Settings</span></a></li>
-                <li class="nav-item"><a href="/about" class="nav-link"><span class="nav-icon">ℹ️</span><span>About</span></a></li>
-                <li class="nav-item"><a href="/" class="nav-link"><span class="nav-icon">🏠</span><span>Homepage</span></a></li>
-            </ul>
-        </aside>
+        <!-- Sidebar -->
+        @include('components.sidebar')
+        
         <main class="main-content" id="mainContent">
             <div class="top-bar">
                 <button class="menu-toggle" id="menuToggle">☰</button>
@@ -105,6 +100,43 @@
             sidebar.classList.toggle('active');
             mainContent.classList.toggle('expanded');
         });
+
+        // Sidebar submenu toggle and active state
+        (function initSidebar() {
+            const parents = document.querySelectorAll('.nav-item.has-children .nav-parent');
+            parents.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const item = btn.closest('.nav-item.has-children');
+                    const isOpen = item.classList.toggle('open');
+                    btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+                });
+            });
+
+            // Active link highlight + auto-open parent
+            const current = window.location.pathname.replace(/\/$/, ''); // trim trailing slash
+            // mark exact match in submenu first
+            let activeLink = document.querySelector(`.submenu a.nav-link[href='${current}'], .submenu a.nav-link[href='${current}/']`);
+            if (!activeLink) {
+                // try top-level
+                activeLink = document.querySelector(`.nav-menu > .nav-item > a.nav-link[href='${current}'], .nav-menu > .nav-item > a.nav-link[href='${current}/']`);
+            }
+
+            if (activeLink) {
+                activeLink.classList.add('active');
+                const parentItem = activeLink.closest('.nav-item.has-children');
+                if (parentItem) {
+                    parentItem.classList.add('open');
+                    const parentBtn = parentItem.querySelector('.nav-parent');
+                    if (parentBtn) parentBtn.setAttribute('aria-expanded', 'true');
+                }
+            } else {
+                // Default active for /results
+                if (current === '' || current === '/results') {
+                    const resultsLink = document.querySelector("a.nav-link[href='/results']");
+                    if (resultsLink) resultsLink.classList.add('active');
+                }
+            }
+        })();
 
         async function fetchResults() {
             try {

@@ -122,6 +122,41 @@
             margin-bottom: 0.5rem;
         }
 
+        .nav-item.has-children .nav-parent {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            justify-content: space-between;
+            /* reset default button look so it matches regular nav links when not hovered */
+            background: transparent;
+            border: none;
+            color: inherit;
+            cursor: pointer;
+            appearance: none;
+            -webkit-appearance: none;
+            text-align: left;
+            font: inherit;
+            border-radius: 12px; /* keep same radius as .nav-link */
+        }
+
+        /* keep visible keyboard focus without changing idle background */
+        .nav-item.has-children .nav-parent:focus-visible {
+            outline: 2px solid rgba(249, 195, 73, 0.6);
+            outline-offset: 2px;
+        }
+
+        .chevron {
+            margin-left: auto;
+            transition: transform 0.25s ease;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .nav-item.open .chevron {
+            transform: rotate(180deg);
+        }
+
         .nav-link {
             display: flex;
             align-items: center;
@@ -171,6 +206,29 @@
             font-size: 1.3rem;
             width: 24px;
             text-align: center;
+        }
+
+        /* Submenu */
+        .submenu {
+            list-style: none;
+            padding: 0.3rem 0 0.4rem;
+            margin: 0.2rem 0 0.4rem;
+            display: none;
+        }
+
+        .nav-item.open > .submenu {
+            display: block;
+        }
+
+        .submenu .nav-link {
+            padding: 0.75rem 1.5rem 0.75rem 2.6rem; /* indent */
+            background: transparent;
+            color: #bbb;
+        }
+
+        .submenu .nav-link:hover {
+            background: rgba(249, 195, 73, 0.08);
+            color: #F9C349;
         }
 
         /* Main Content */
@@ -494,63 +552,7 @@
 
     <div class="dashboard-layout">
         <!-- Sidebar -->
-        <aside class="sidebar" id="sidebar">
-            <div class="sidebar-logo">
-                <div class="logo-text">SILOKASI</div>
-                <div class="logo-subtitle">DASHBOARD</div>
-            </div>
-
-            <ul class="nav-menu">
-                <li class="nav-item">
-                    <a href="/dashboard" class="nav-link">
-                        <span class="nav-icon">📊</span>
-                        <span>Dashboard</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="/criteria" class="nav-link active">
-                        <span class="nav-icon">📋</span>
-                        <span>Kriteria</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="/alternatives" class="nav-link">
-                        <span class="nav-icon">📍</span>
-                        <span>Alternatif</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="/results" class="nav-link">
-                        <span class="nav-icon">🏆</span>
-                        <span>Hasil Ranking</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <span class="nav-icon">👥</span>
-                        <span>Decision Makers</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <span class="nav-icon">⚙️</span>
-                        <span>Settings</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="/about" class="nav-link">
-                        <span class="nav-icon">ℹ️</span>
-                        <span>About</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="/" class="nav-link">
-                        <span class="nav-icon">🏠</span>
-                        <span>Homepage</span>
-                    </a>
-                </li>
-            </ul>
-        </aside>
+        @include('components.sidebar')
 
         <!-- Main Content -->
         <main class="main-content" id="mainContent">
@@ -750,10 +752,47 @@
             const user = localStorage.getItem('user');
             if (user) {
                 const userData = JSON.parse(user);
-                document.getElementById('userFullName').textContent = userData.name;
-                document.getElementById('userAvatar').textContent = userData.name.charAt(0).toUpperCase();
+                document.getElementById('userFullName').textContent = userData.name || 'Admin User';
+                document.getElementById('userAvatar').textContent = (userData.name || 'A')[0].toUpperCase();
             }
         });
+
+        // Sidebar submenu toggle and active state
+        (function initSidebar() {
+            const parents = document.querySelectorAll('.nav-item.has-children .nav-parent');
+            parents.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const item = btn.closest('.nav-item.has-children');
+                    const isOpen = item.classList.toggle('open');
+                    btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+                });
+            });
+
+            // Active link highlight + auto-open parent
+            const current = window.location.pathname.replace(/\/$/, ''); // trim trailing slash
+            // mark exact match in submenu first
+            let activeLink = document.querySelector(`.submenu a.nav-link[href='${current}'], .submenu a.nav-link[href='${current}/']`);
+            if (!activeLink) {
+                // try top-level
+                activeLink = document.querySelector(`.nav-menu > .nav-item > a.nav-link[href='${current}'], .nav-menu > .nav-item > a.nav-link[href='${current}/']`);
+            }
+
+            if (activeLink) {
+                activeLink.classList.add('active');
+                const parentItem = activeLink.closest('.nav-item.has-children');
+                if (parentItem) {
+                    parentItem.classList.add('open');
+                    const parentBtn = parentItem.querySelector('.nav-parent');
+                    if (parentBtn) parentBtn.setAttribute('aria-expanded', 'true');
+                }
+            } else {
+                // Default active for /criteria
+                if (current === '' || current === '/criteria') {
+                    const criteriaLink = document.querySelector("a.nav-link[href='/criteria']");
+                    if (criteriaLink) criteriaLink.classList.add('active');
+                }
+            }
+        })();
 
         // Criteria Chart
         const ctx = document.getElementById('criteriaChart').getContext('2d');
