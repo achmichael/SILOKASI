@@ -51,13 +51,13 @@
             </a>
         </li>
         <li class="nav-item">
-            <a href="#" class="nav-link">
+            <a href="/decision-makers" class="nav-link">
                 <span class="nav-icon">👥</span>
                 <span>Decision Makers</span>
             </a>
         </li>
         <li class="nav-item">
-            <a href="#" class="nav-link">
+            <a href="/settings" class="nav-link">
                 <span class="nav-icon">⚙️</span>
                 <span>Settings</span>
             </a>
