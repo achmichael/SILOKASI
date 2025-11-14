@@ -40,6 +40,7 @@ Route::middleware('')->group(function () {
         Route::post('/calculate-weights', [CriteriaComparisonController::class, 'calculateWeights']);
         Route::get('/weights/{userId}', [CriteriaComparisonController::class, 'getWeights']);
         Route::get('/comparisons/{userId}', [CriteriaComparisonController::class, 'getComparisons']);
+        // route for calculate priority weight after comparisons criterias
         Route::get('/aggregated-weights', [CriteriaComparisonController::class, 'calculateAggregatedWeights']);
     });
 

@@ -329,7 +329,6 @@
     const crMessage = document.getElementById('crMessage');
     const weightsTableBody = document.getElementById('weightsTableBody');
 
-    // Load criteria from API
     async function loadCriteria() {
         try {
             const response = await fetch(`${API_URL}/criteria`);
@@ -353,7 +352,6 @@
         }
     }
 
-    // Initialize comparison matrix
     function initializeMatrix() {
         const n = criteriaData.length;
         comparisonMatrix = Array(n).fill(null).map(() => Array(n).fill(1));
@@ -363,19 +361,16 @@
         btnSave.disabled = false;
     }
 
-    // Render matrix table
     function renderMatrix() {
         const n = criteriaData.length;
 
         let html = '<div class="comparison-matrix"><table class="matrix-table"><thead><tr><th>Kriteria</th>';
 
-        // Header row
         criteriaData.forEach(c => {
             html += `<th>${c.code}</th>`;
         });
         html += '</tr></thead><tbody>';
 
-        // Matrix rows
         for (let i = 0; i < n; i++) {
             html += `<tr><th>${criteriaData[i].code}</th>`;
 
@@ -398,11 +393,9 @@
         matrixContainer.innerHTML = html;
     }
 
-    // Update matrix when input changes
     window.updateMatrix = function(row, col, value) {
         const val = parseFloat(value) || 1;
 
-        // Validate Saaty scale
         if (val < 0.1 || val > 9) {
             Swal.fire({
                 icon: 'warning',
@@ -417,14 +410,12 @@
         comparisonMatrix[row][col] = val;
         comparisonMatrix[col][row] = 1 / val;
 
-        // Update reciprocal cell
         const reciprocalCell = document.getElementById(`cell-${col}-${row}`);
         if (reciprocalCell) {
             reciprocalCell.textContent = (1 / val).toFixed(3);
         }
     };
 
-    // Calculate weights using ANP
     btnCalculate.addEventListener('click', async () => {
         try {
             Swal.fire({
@@ -474,7 +465,6 @@
         }
     });
 
-    // Save comparisons to database
     btnSave.addEventListener('click', async () => {
         try {
             const comparisons = [];
